@@ -80,7 +80,7 @@
             this.updateStatsInterval = null;
 
             App.vent.off('subtitle:downloaded');
-
+            App.SubtitlesServer.stop();
             win.info('Streaming cancelled');
         },
 
@@ -364,7 +364,7 @@
 
             this.stateModel.set('state', state);
 
-            if (state === 'ready' || state === 'playingExternally' || state === 'waitingForSubtitles' ) {
+            if (state === 'ready' || state === 'playingExternally') {
                 App.vent.trigger('stream:ready', this.streamInfo);
                 this.stateModel.destroy();
             } else {
@@ -382,6 +382,9 @@
             var defaultSubtitle = this.torrentModel.get('defaultSubtitle');
 
             win.info(total + ' subtitles found');
+            // if 0 subtitles found code will not stuck at 'waiting for subtitle'
+            this.subtitleReady = true;
+
             this.torrentModel.set('subtitle', subtitles);
 
             if (defaultSubtitle !== 'none') {
@@ -413,7 +416,7 @@
                                         autoclose: true
                                     }));
                                 } else {
-                                    App.Subtitles.Server.start(res);
+                                    App.SubtitlesServer.start(res);
                                 }
                             }.bind(this));
                         }
@@ -431,27 +434,26 @@
                 this.subtitleReady = true;
             }
         },
-
         // serve subtitles on a local server to make them accessible to remote cast devices
-        serveSubtitles: function(localPath) {
-            App.vent.trigger('subtitle:convert', {
-                path: localPath
-            }, function(err, res) {
-                if (err) {
-                    win.error('error converting subtitles', err);
-                    this.streamInfo.set('subFile', null);
-                    App.vent.trigger('notification:show', new App.Model.Notification({
-                        title: i18n.__('Error converting subtitle'),
-                        body: i18n.__('Try another subtitle or drop one in the player'),
-                        showRestart: false,
-                        type: 'error',
-                        autoclose: true
-                    }));
-                } else {
-                    App.Subtitles.Server.start(res);
-                }
-            }.bind(this));
-        },
+serveSubtitles: function(localPath) {
+    App.vent.trigger('subtitle:convert', {
+        path: localPath
+    }, function(err, res) {
+        if (err) {
+            win.error('error converting subtitles', err);
+            this.streamInfo.set('subFile', null);
+            App.vent.trigger('notification:show', new App.Model.Notification({
+                title: i18n.__('Error converting subtitle'),
+                body: i18n.__('Try another subtitle or drop one in the player'),
+                showRestart: false,
+                type: 'error',
+                autoclose: true
+            }));
+        } else {
+            App.SubtitlesServer.start(res);
+        }
+    }.bind(this));
+},
 
         handleSubtitles: function () {
             if (this.stopped) {
@@ -469,6 +471,15 @@
                 .catch(function (err) {
                     this.subtitleReady = true;
                     win.error('subtitleProvider.fetch()', err);
+                    if (subtitle_retry === undefined) { subtitle_retry=0; }
+                    subtitle_retry++;
+                    if (subtitle_retry<5) {
+                        console.log('subtitle fetching error. retry: ' + subtitle_retry + ' of 4');
+                    	this.subtitleReady = false;
+                    	this.handleSubtitles(subtitle_retry);
+                    } else {
+	                   this.subtitleReady = true;
+                    }
                 }.bind(this));
 
             return;
@@ -530,6 +541,5 @@
     App.vent.on('stream:start', streamer.start.bind(streamer));
     App.vent.on('stream:stop', streamer.stop.bind(streamer));
     App.vent.on('stream:serve_subtitles', streamer.serveSubtitles.bind(streamer));
-    App.vent.on('stream:unserve_subtitles', App.Subtitles.Server.stop);
 
 })(window.App);
