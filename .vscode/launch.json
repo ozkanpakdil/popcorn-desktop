@@ -1,17 +1,20 @@
 {
     "configurations": [
         {
-            "name": "GulpTester",
+            "name": "NWjsTester",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-            "stopOnEntry": false,
-            "args": ["build"],
-            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/cache/0.32.4-sdk/win64/nw.exe",
             "runtimeArgs": [
-                "--nolazy"
+                "${workspaceRoot}",
+                "--remote-debugging-port=9222"
             ],
+            //"program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "stopOnEntry": false,
+            //"args": ["run"],
+            "cwd": "${workspaceRoot}",
             "console": "internalConsole",
+            "port": 9222
         }
     ]
 }

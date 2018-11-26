@@ -137,8 +137,7 @@
     setInterval(function(){
         win.info('Scanning: Local Network for DLNA devices');
         dlnacasts.update();
+        App.Device.Dlna = Dlna;
     },15000);
 
-
-    App.Device.Dlna = Dlna;
 })(window.App);
