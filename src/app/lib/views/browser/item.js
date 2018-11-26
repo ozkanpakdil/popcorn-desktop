@@ -264,6 +264,7 @@
                 if (Settings.watchedCovers === 'fade') {
                     this.$el.removeClass('watched');
                 }
+
                 Database.markMovieAsNotWatched({
                         imdb_id: this.model.get('imdb_id')
                     }, true)
