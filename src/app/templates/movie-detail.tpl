@@ -1,5 +1,5 @@
 <%
-if(typeof backdrop === "undefined"){ backdrop = ""; };
+if(typeof health === "undefined"){ health = false; };
 if(typeof synopsis === "undefined"){ synopsis = "Synopsis not available."; };
 if(typeof runtime === "undefined"){ runtime = "N/A"; };
 if (genre) {
@@ -11,13 +11,13 @@ if (genre) {
 };
 %>
 
-<div data-bgr="<%= backdrop %>" class="backdrop"></div>
+<div class="backdrop"></div>
 <div class="backdrop-overlay"></div>
 
 <div class="fa fa-times close-icon"></div>
 
 <section class="poster-box">
-    <img src="images/posterholder.png" data-cover="<%= cover %>" class="mcover-image" />
+    <img src="images/posterholder.png" class="mcover-image" />
 </section>
 
 <section class="content-box">
@@ -89,4 +89,5 @@ if (genre) {
         </div>
 
     </div>
+    <div id="play-control"></div>
 </section>

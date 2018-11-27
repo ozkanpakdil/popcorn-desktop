@@ -577,4 +577,8 @@
 	"tv-movie": "tv-movie",
 	"Error reading subtitle timings, file seems corrupted": "Error reading subtitle timings, file seems corrupted",
 	"musical": "musical"
+	"Are you sure you want to clear the entire Torrent Collection ?": "Are you sure you want to clear the entire Torrent Collection ?",
+	"superhero": "superhero",
+	"Audio Language": "Audio Language",
+	"Subtitle": "Subtitle"
 }
