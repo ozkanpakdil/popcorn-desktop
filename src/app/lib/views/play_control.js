@@ -46,7 +46,7 @@
             this.setUiStates();
             this.model.on('change:langs', this.loadAudioDropdown.bind(this));
             this.model.on('change:subtitle', this.loadSubDropdown.bind(this));
-            getSubtitles(this.buildSubtitleQuery());
+            //TODO: getSubtitles(this.buildSubtitleQuery());
         },
 
         setQuality: function () {

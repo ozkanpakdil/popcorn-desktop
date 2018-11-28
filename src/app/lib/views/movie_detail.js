@@ -34,14 +34,6 @@
             backdrop: '.backdrop',
             poster: '.mcover-image'
         },
-
-        events: {
-          'click .close-icon': 'closeDetails',
-          'click .movie-imdb-link': 'openIMDb',
-          'mousedown .magnet-link': 'openMagnet',
-          'click .rating-container': 'switchRating'
-        },
-
         regions: {
            PlayControl: '#play-control'
        },

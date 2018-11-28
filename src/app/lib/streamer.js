@@ -473,6 +473,8 @@ serveSubtitles: function(localPath) {
 
             var subtitleProvider = App.Config.getProviderForType('subtitle');
 
+            var subtitle_retry=0;
+
             subtitleProvider
                 .fetch(this.buildSubtitleQuery())
                 .then(this.onSubtitlesFound.bind(this))
@@ -533,7 +535,7 @@ serveSubtitles: function(localPath) {
         getWebTorrentInstance: function() {
             if (this.webtorrent === null) {
                 this.webtorrent = new WebTorrent({
-                    maxConns: parseInt(Settings.connectionLimit, 10) || 15,
+                    maxConns: parseInt(Settings.connectionLimit, 10) || 55,
                     tracker: {
                         wrtc: false, // disable webrtc
                         announce: Settings.trackers.forced
@@ -549,5 +551,6 @@ serveSubtitles: function(localPath) {
     App.vent.on('stream:start', streamer.start.bind(streamer));
     App.vent.on('stream:stop', streamer.stop.bind(streamer));
     App.vent.on('stream:serve_subtitles', streamer.serveSubtitles.bind(streamer));
+
 
 })(window.App);

@@ -1,10 +1,17 @@
 (function (App) {
     'use strict';
 
+    var PirateBay = require('thepiratebay');
     var torrentHealth = require('webtorrent-health');
     var cancelTorrentHealth = function () {};
     var torrentHealthRestarted = null;
 
+    //used for piratebay auto search
+    function pad(n) {
+        return (n < 10) ? ('0' + n) : n;
+    }
+
+    var _this, bookmarked;
     var ShowDetail = Marionette.View.extend({
         template: '#show-detail-tpl',
         className: 'shows-container-contain',
