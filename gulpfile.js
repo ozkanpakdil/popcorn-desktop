@@ -64,26 +64,13 @@ const parsePlatforms = () => {
 // returns an array of paths with the node_modules to include in builds
 const parseReqDeps = () => {
     return new Promise((resolve, reject) => {
-        exec('npm ls --production=true --parseable=true', {maxBuffer: 1024 * 500}, (error, stdout, stderr) => {
-                // build array
-                let npmList = stdout.split('\n');
-
-                // remove empty or soon-to-be empty
-                npmList = npmList.filter((line) => {
-                    return line.replace(process.cwd().toString(), '');
-                });
-
-                // format for nw-builder
-                npmList = npmList.map((line) => {
-                    return line.replace(process.cwd(), '.') + '/**';
-                });
-
-                // return
-                resolve(npmList);
-                if (error || stderr) {
-                  console.log(error);
-}
+        var npmList = fs.readdirSync('./node_modules');
+        // format for nw-builder
+        npmList = npmList.map((line) => {
+            return './node_modules/' + line.replace(process.cwd(), '.') + '/**';
         });
+        // return
+        resolve(npmList);
     });
 };
 

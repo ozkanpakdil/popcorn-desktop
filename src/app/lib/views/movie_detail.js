@@ -3,7 +3,7 @@
     // Torrent Health
     var torrentHealth = require('webtorrent-health'),
     cancelTorrentHealth = function () {},
-    torrentHealthRestarted = null, hide;
+    torrentHealthRestarted = null;
 
     App.View.MovieDetail = Marionette.View.extend({
         template: '#movie-detail-tpl',
@@ -12,28 +12,18 @@
         ui: {
             selected_lang: '.selected-lang',
             bookmarkIcon: '.favourites-toggle',
-            hideIcon: '.sha-hide',
-            watchedIcon: '.watched-toggle'
-        },
-
-        events: {
-            'click #watch-now': 'startStreaming',
-            'click #watch-trailer': 'playTrailer',
-            'click .close-icon': 'closeDetails',
-            'click #switch-hd-on': 'enableHD',
-            'click #switch-hd-off': 'disableHD',
-            'click .favourites-toggle': 'toggleFavourite',
-            'click .watched-toggle': 'toggleWatched',
-            'click .movie-imdb-link': 'openIMDb',
-            'mousedown .magnet-link': 'openMagnet',
-            'click .playerchoicemenu li a': 'selectPlayer',
-            'click .rating-container': 'switchRating',
-            'click .health-icon': 'resetHealth',
-            'click .sha-hide': 'toggleHide',
             watchedIcon: '.watched-toggle',
             backdrop: '.backdrop',
             poster: '.mcover-image'
         },
+
+        events: {
+          'click .close-icon': 'closeDetails',
+          'click .movie-imdb-link': 'openIMDb',
+          'mousedown .magnet-link': 'openMagnet',
+          'click .rating-container': 'switchRating'
+        },
+
         regions: {
            PlayControl: '#play-control'
        },
@@ -198,29 +188,6 @@
                 .addClass(health)
                 .attr('data-original-title', i18n.__('Health ' + health) + ' - ' + i18n.__('Ratio:') + ' ' + ratio.toFixed(2) + ' <br> ' + i18n.__('Seeds:') + ' ' + torrent.seed + ' - ' + i18n.__('Peers:') + ' ' + torrent.peer)
                 .tooltip('fixTitle');
-        },
-
-        toggleHide: function (e) {
-            if (e.type) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            var that = this;
-            Database.toggleItemToNotWanted(that.model.get('imdb_id'),that.model.get('type')).then(
-                function(wantedStat){
-                    console.log('wantedStat:'+wantedStat);
-                    if (wantedStat === 'added') {
-                        that.ui.hideIcon.addClass('selected').text(i18n.__('Unhide'));
-                        switch (Settings.watchedCovers) {
-                            case 'hide':
-                                $('li[data-imdb-id="' + that.model.get('imdb_id') + '"]').remove();
-                                break;
-                        }
-                    } else {
-                        that.ui.hideIcon.removeClass('selected').text(i18n.__('Hide this'));
-                    }
-                }
-            ).catch(err => console.log(err));
         },
 
         openIMDb: function () {
