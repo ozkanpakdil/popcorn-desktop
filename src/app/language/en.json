@@ -119,5 +119,18 @@
 	"playingExternally": "playingExternally",
 	"Downloaded": "Downloaded",
 	"Health Good": "Health Good",
-	"reality": "reality"
+	"reality": "reality",
+	"Health Bad": "Health Bad",
+	"Unhide": "Unhide",
+	"ready": "ready",
+	"Currently watching": "Currently watching",
+	"No, it's not that": "No, it's not that",
+	"Correct": "Correct",
+	"Playing Next": "Playing Next",
+	"No thank you": "No thank you",
+	"Play Now": "Play Now",
+	"Disabled": "Disabled",
+	"Local": "Local",
+	"%s hour(s) remaining": "%s hour(s) remaining",
+	"%s minute(s) remaining": "%s minute(s) remaining"
 }
