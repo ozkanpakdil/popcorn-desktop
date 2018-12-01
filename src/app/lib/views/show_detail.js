@@ -458,8 +458,8 @@
             var episodes_data = [];
             var selected_quality = $(e.currentTarget).attr('data-quality');
             var auto_play = false;
-
-            if (Settings.playNextEpisodeAuto && this.model.get('imdb_id').indexOf('mal') === -1) {
+            var images = this.model.get('images');
+            if (AdvSettings.get('playNextEpisodeAuto') && this.model.get('imdb_id').indexOf('mal') === -1) {
                 _.each(this.model.get('episodes'), function (value) {
                     var epaInfo = {
                         id: parseInt(value.season) * 100 + parseInt(value.episode),
@@ -480,7 +480,7 @@
                         imdb_id: that.model.get('imdb_id'),
                         device: App.Device.Collection.selected,
                         poster: that.model.get('poster'),
-                        backdrop: that.model.get('backdrop'),
+                        backdrop: images.banner,
                         status: that.model.get('status'),
                         type: 'episode'
                     };
@@ -502,7 +502,7 @@
             var torrentStart = new Backbone.Model({
                 torrent: $(e.currentTarget).attr('data-torrent'),
                 poster: that.model.get('poster'),
-                backdrop: that.model.get('backdrop'),
+                backdrop: images.banner,
                 type: 'episode',
                 tvdb_id: that.model.get('tvdb_id'),
                 imdb_id: that.model.get('imdb_id'),
