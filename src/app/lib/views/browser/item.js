@@ -131,7 +131,9 @@
 
 
             var setImage = function (img) {
+                if (this.ui.cover.css) {
                 this.ui.cover.css('background-image', 'url(' + img + ')').addClass('fadein');
+                }
             }.bind(this);
 
             var posterCache = new Image();
@@ -163,7 +165,7 @@
 
             var realtype = this.model.get('type');
             var itemtype = realtype.replace('bookmarked', '');
-            var providers = this.model.get('providers');
+            var providers = this.model.get('providers') || [App.Providers.get(this.model.get('provider'))];
             var id = this.model.get(this.model.idAttribute);
 
             var promises = Object.values(providers).map(function (p) {
@@ -257,7 +259,7 @@
         addBookmarked: function () {
             var imdb = this.model.get('imdb_id');
             var itemtype = this.model.get('type');
-            var provider = App.Providers.get(this.model.get('provider'));
+            var provider = this.model.get('providers').torrent;
 
             return provider.detail(imdb, this.model.attributes).then(function (data) {
                 data.provider = provider.name;

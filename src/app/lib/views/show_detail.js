@@ -166,13 +166,20 @@
             }
 
             $('.star-container-tv,.shmi-imdb,.magnet-icon').tooltip();
+            var noimg = 'images/posterholder.png';
+            var nobg = 'images/bg-header.jpg';
             var images = this.model.get('images');
             var backdrop = this.model.get('backdrop');
             var poster = this.model.get('poster');
-            if (!poster)
+            if (!poster && images)
             {
-              poster = images.poster;
-              backdrop = images.banner;
+              poster = images.poster || noimg;
+            }
+            else {
+              poster = noimg;
+            }
+            if (!backdrop) {
+              backdrop = images.banner || nobg;
             }
             var posterCache = new Image();
             posterCache.src = poster;
@@ -445,7 +452,7 @@
 
             title += ' - ' + i18n.__('Season %s', season) + ', ' + i18n.__('Episode %s', episode) + ' - ' + name;
             var epInfo = {
-                type: 'tvshow',
+                type: 'show',
                 imdbid: imdbid,
                 tvdbid: that.model.get('tvdb_id'),
                 episode_id: episode_id,
@@ -469,7 +476,7 @@
                         title: that.model.get('title') + ' - ' + i18n.__('Season %s', value.season) + ', ' + i18n.__('Episode %s', value.episode) + ' - ' + value.title,
                         torrents: value.torrents,
                         extract_subtitle: {
-                            type: 'tvshow',
+                            type: 'show',
                             imdbid: that.model.get('imdb_id'),
                             tvdbid: value.tvdb_id.toString(),
                             season: value.season,
@@ -480,7 +487,7 @@
                         imdb_id: that.model.get('imdb_id'),
                         device: App.Device.Collection.selected,
                         poster: that.model.get('poster'),
-                        backdrop: images.banner,
+                        backdrop: that.model.get('backdrop') || images.banner,
                         status: that.model.get('status'),
                         type: 'episode'
                     };
@@ -502,7 +509,7 @@
             var torrentStart = new Backbone.Model({
                 torrent: $(e.currentTarget).attr('data-torrent'),
                 poster: that.model.get('poster'),
-                backdrop: images.banner,
+                backdrop: that.model.get('backdrop') || images.banner,
                 type: 'episode',
                 tvdb_id: that.model.get('tvdb_id'),
                 imdb_id: that.model.get('imdb_id'),

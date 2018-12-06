@@ -4,7 +4,7 @@
 
     var WebTorrentStreamer = function () {
         // WebTorrent instance
-        this.webtorrent = App.WebTorrent;
+        this.torrent = null;
         // Torrent Backbone Model
         this.torrentModel = null;
 
@@ -14,10 +14,6 @@
         // Stream Info Backbone Model, which keeps showing ratio/download/upload info.
         // See models/stream_info.js
         this.streamInfo = null;
-
-        // Interval controller for StreamInfo view, which keeps showing ratio/download/upload info.
-        // See models/stream_info.js
-        this.updateStatsInterval = null;
 
         // video dummy element
         this.video = null;
@@ -54,11 +50,11 @@
 
         // kill the streamer
         stop: function() {
-            if (this.torrentModel) {
+            if (this.torrent) {
                 // update ratio
-                AdvSettings.set('totalDownloaded', Settings.totalDownloaded + this.torrentModel.get('torrent').downloaded);
-                AdvSettings.set('totalUploaded', Settings.totalUploaded + this.torrentModel.get('torrent').uploaded);
-                this.webtorrent.remove(this.torrentModel.get('torrent').infoHash);
+                AdvSettings.set('totalDownloaded', Settings.totalDownloaded + this.downloaded);
+                AdvSettings.set('totalUploaded', Settings.totalUploaded + this.uploaded);
+                this.torrent.destroy();
             }
 
             if (this.video) {
@@ -75,9 +71,6 @@
             this.canPlay = false;
             this.stopped = true;
 
-            clearInterval(this.updateStatsInterval);
-            this.updateStatsInterval = null;
-
             App.vent.off('subtitle:downloaded');
             App.SubtitlesServer.stop();
             win.info('Streaming cancelled');
@@ -93,11 +86,10 @@
         fetchTorrent: function(torrentInfo) {
             return new Promise(function (resolve, reject) {
 
-                var client = App.WebTorrent;
                 // handles magnet and hosted torrents
                 var uri = torrentInfo.magnet || torrentInfo.url || torrentInfo;
 
-                var torrent = client.add(uri, {
+                this.torrent = App.WebTorrent.add(uri, {
                     path: App.settings.tmpLocation,
                     maxConns: parseInt(Settings.connectionLimit, 10) || 55,
                     dht: true,
@@ -107,15 +99,52 @@
 
 
 
-                torrent.on('metadata', function () {
-                    this.torrentModel.set('torrent', torrent);
-                    resolve(torrent);
+                this.torrent.on('metadata', function () {
+                    this.torrentModel.set('torrent', this.torrent);
+                    resolve(this.torrent);
                 }.bind(this));
-                client.on('error', function (error) {
+                this.torrent.on('download', function () {
+
+                this.torrentModel.set('downloadSpeed', Common.fileSize(this.torrent.downloadSpeed) + '/s');
+                this.torrentModel.set('downloaded', Math.round(this.torrent.downloaded).toFixed(2));
+                this.torrentModel.set('downloadedFormatted', Common.fileSize(this.torrent.downloaded));
+                this.torrentModel.set('active_peers', this.torrent.numPeers);
+                this.torrentModel.set('downloadedPercent', (this.torrent.progress * 100) || 0);
+                this.torrentModel.set('active_peers', this.torrent.numPeers);
+                this.torrentModel.set('total_peers', this.torrent.numPeers);
+                this.torrentModel.set('time_left', (this.torrent.timeRemaining));
+                }.bind(this));
+
+
+
+                this.torrent.on('upload', function () {
+                    this.torrentModel.set('uploadSpeed', Common.fileSize(this.torrent.uploadSpeed)  + '/s');
+                    this.torrentModel.set('active_peers', this.torrent.numPeers);
+                    this.torrentModel.set('total_peers', this.torrent.numPeers);
+                }.bind(this));
+
+
+                this.torrent.on('error', function (error) {
+                     if (this.torrent.infoHash) {
+                     this.torrent.remove(this.torrent.infoHash);
+                     this.torrent.add(this.torrent.infoHash);
+                   } else {
+                     win.error('Torrent fatal error', error);
+                     this.stop();
+                     reject(error);
+                   }
+
+                }.bind(this));
+
+
+
+                App.WebTorrent.on('error', function (error) {
                     win.error('WebTorrent fatal error', error);
                     this.stop();
                     reject(error);
                 }.bind(this));
+
+
 
             }.bind(this));
         },
@@ -289,7 +318,7 @@
 
         handleStreamInfo: function () {
             this.streamInfo.set('torrentModel', this.torrentModel);
-            this.updateStatsInterval = setInterval(this.streamInfo.updateStats.bind(this.streamInfo), 1000);
+
             this.streamInfo.updateInfos();
             this.torrentModel.on('change', this.streamInfo.updateInfos.bind(this.streamInfo));
         },
@@ -334,15 +363,20 @@
                 show_controls: false,
                 streamInfo: this.streamInfo
             });
-
             App.vent.trigger('stream:started', this.stateModel);
         },
 
         watchState: function () {
-            if (!this.webtorrent) {
-                return;
+          if (this.stopped) {
+              return;
             }
-
+            if (!this.torrent) {
+              return;
+            }
+            if (!this.torrentModel) {
+              this.stopped = true;
+              return;
+            }
             var torrentModel = this.torrentModel.get('torrent');
             var player = this.streamInfo.get('device');
 
@@ -428,6 +462,10 @@
                                 }
     }.bind(this));
                         }
+                        else {
+                            this.subtitleReady = true;
+                        }
+
                     }.bind(this));
 
                     // download the subtitle
