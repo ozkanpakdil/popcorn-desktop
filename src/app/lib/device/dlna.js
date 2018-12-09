@@ -45,8 +45,6 @@
 
             self.player.play(url_video, media, function(err, status) {
                 if (err) {
-                    alert('Device will not play this video.');
-                    App.LoadingView.cancelStreaming();
                     win.error('DLNA.play error: ', err);
                 } else {
                     win.info('Playing ' + url + ' on ' + self.get('name'));
@@ -134,10 +132,9 @@
         }
     });
 
-    setInterval(function(){
-        win.info('Scanning: Local Network for DLNA devices');
-        dlnacasts.update();
-        App.Device.Dlna = Dlna;
-    },15000);
+    win.info('Scanning: Local Network for DLNA devices');
+    dlnacasts.update();
 
+
+    App.Device.Dlna = Dlna;
 })(window.App);
