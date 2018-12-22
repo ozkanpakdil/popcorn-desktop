@@ -260,5 +260,12 @@
 	"western": "western",
 	"Ended": "Ended",
 	"Seen": "Seen",
-	"Alphabet": "Alphabet"
+	"Alphabet": "Alphabet",
+	"Search for torrent": "Search for torrent",
+	"Drop Magnet or .torrent": "Drop Magnet or .torrent",
+	"Flush entire collection": "Flush entire collection",
+	"Open Collection Directory": "Open Collection Directory",
+	"Import a Torrent": "Import a Torrent",
+	"Canceled": "Canceled",
+	"documentary": "documentary"
 }
