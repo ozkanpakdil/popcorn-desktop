@@ -267,5 +267,11 @@
 	"Open Collection Directory": "Open Collection Directory",
 	"Import a Torrent": "Import a Torrent",
 	"Canceled": "Canceled",
-	"documentary": "documentary"
+	"documentary": "documentary",
+	"No Favorites found...": "No Favorites found...",
+	"history": "history",
+	"Resolving..": "Resolving..",
+	"Error resolving torrent.": "Error resolving torrent.",
+	"Connect to %s to automatically 'scrobble' episodes you watch in %s": "Connect to %s to automatically 'scrobble' episodes you watch in %s",
+	"Code:": "Code:"
 }
